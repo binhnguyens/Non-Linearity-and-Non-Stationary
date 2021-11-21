@@ -11,8 +11,9 @@ switch n
         %PPG Signal
         
         load ('PPG_signal.mat');
+       
         signal = normalization (PPG (1:15000));
-        
+        fs = 2000;
         
      case 2
         
@@ -24,11 +25,14 @@ switch n
         end
 
         signal = normalization (synthetic_AR (1:100));
+        fs = 1;
         
     case 3
         % Linear Signal
         linear_line = 1:100;
+        
         signal = normalization (linear_line);
+        fs = 1;
         
     case 4
         % MN Signal
@@ -38,6 +42,7 @@ switch n
         
         
         signal = normalization (y(1:20000));
+        fs = 16000;
         
     case 5
         %AR Signal
@@ -46,7 +51,7 @@ switch n
         y = audioread (strcat (path , filename));
         
         signal = normalization (y(1:20000));
-
+        fs = 44000;
 end
 
 %% Fast BDS test 
@@ -73,5 +78,7 @@ disp (SIG);
 % 
 % Values close to 1 indicate that the nonlinearity detection test is not reliable and that a weak nonlinearity may be present.
 
-
-
+input = 1:length(signal);
+z = iddata(signal,transpose (input), 1/fs);
+order = [1 1 0];
+isnlarx (z,order)

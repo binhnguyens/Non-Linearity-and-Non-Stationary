@@ -2,7 +2,9 @@
 % Non-linear if p < 0.05
 % Linear if p > 0.05
 clear; clc;
-n = 5;
+n = 2;
+path = '../Data/';
+
 
 switch n 
 
@@ -10,33 +12,32 @@ switch n
          
         %PPG Signal
         
-        load ('PPG_signal.mat');
+        load (strcat (path, 'PPG_signal.mat'));
        
         signal = normalization (PPG (1:15000));
         fs = 2000;
         
      case 2
         
-         % AR Signal
+         % AR Synthetic Signal
         synthetic_AR = zeros (1,1000);
         synthetic_AR(1) = 1000;
         for i = 2:1000
             synthetic_AR (i) = 0.5*synthetic_AR(i-1) ;
         end
 
-        signal = normalization (synthetic_AR (1:100));
-        fs = 1;
+        signal = transpose (normalization (synthetic_AR (1:100)));
+        fs = 1000;
         
     case 3
         % Linear Signal
-        linear_line = 1:100;
+        linear_line = 1:1000;
         
-        signal = normalization (linear_line);
+        signal = transpose (normalization (linear_line));
         fs = 1;
         
     case 4
         % MN Signal
-        path = '/Users/binhnguyen/Downloads/';
         filename = 'test_ES2004c_1980_1990_xxxxx_4_0.wav';
         y = audioread (strcat (path , filename));
         
@@ -45,13 +46,26 @@ switch n
         fs = 16000;
         
     case 5
-        %AR Signal
-        path = '/Users/binhnguyen/Downloads/';
+        % AR Signal
         filename = 'AVPEPUDEAC0045a1.wav';
         y = audioread (strcat (path , filename));
         
         signal = normalization (y(1:20000));
         fs = 44000;
+    
+    case 6
+        % Sinusoid signal
+           fs = 1000; 
+           
+           dt = 1/fs; 
+           StopTime = 0.25;  
+           t = (0:dt:StopTime-dt)';   
+           
+           Fc = 60;                   
+           x = cos(2*pi*Fc*t);
+           
+           signal = normalization (x);
+           
 end
 
 %% Fast BDS test 
@@ -80,5 +94,5 @@ disp (SIG);
 
 input = 1:length(signal);
 z = iddata(signal,transpose (input), 1/fs);
-order = [1 1 0];
+order = [2 0 1];
 isnlarx (z,order)

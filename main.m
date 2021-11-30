@@ -2,7 +2,7 @@
 % Non-linear if p < 0.05
 % Linear if p > 0.05
 clear; clc;
-n = 2;
+n = 9;
 path = '../Data/';
 
 
@@ -66,6 +66,33 @@ switch n
            
            signal = normalization (x);
            
+     case 7
+         
+        %ECG Signal
+        
+        load (strcat (path, 'ECG.mat'));
+       
+        signal = normalization (ECG (1:15000));
+        fs = 2000;
+        
+        
+     case 8
+         
+        %RI Signal
+        
+        load (strcat (path, 'RI.mat'));
+       
+        signal = normalization (RI (1:15000));
+        fs = 2000;
+                
+     case 9
+         
+        %GSR Signal
+        
+        load (strcat (path, 'GSR.mat'));
+       
+        signal = normalization (GSR (1:15000));
+        fs = 2000;
 end
 
 %% Fast BDS test 
@@ -94,5 +121,5 @@ disp (SIG);
 
 input = 1:length(signal);
 z = iddata(signal,transpose (input), 1/fs);
-order = [2 0 1];
+order = [0 1 0];
 isnlarx (z,order)

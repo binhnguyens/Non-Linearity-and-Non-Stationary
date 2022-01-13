@@ -2,7 +2,7 @@
 % Non-linear if p < 0.05
 % Linear if p > 0.05
 clear; clc;
-n = 4;
+n = 7;
 path = '../Data/';
 
 
@@ -136,12 +136,16 @@ disp (SIG);
 % 
 % Values close to 1 indicate that the nonlinearity detection test is not reliable and that a weak nonlinearity may be present.
 
-
-% Input model as iddata
 input = 1:length(signal);
 z = iddata(signal,transpose (input), 1/fs);
 
-% Estimate the ARX params with respective order
+% Order [outputs, inputs, min input delay]
+
+% ARX model order matrix [na nb nk]. na denotes the number of delayed outputs, 
+% nb denotes the number of delayed inputs, and nk denotes the minimum input delay. 
+% The minimum output delay is fixed to 1. For more information on how to construct 
+% the orders matrix, see arx.
+
 sys = arx (signal,nl_test);
 
 % Parameters of sys
@@ -151,14 +155,11 @@ param = sys.Report.Parameters.ParVector;
 % Look at this: https://www.mathworks.com/help/ident/ref/arx.html
 [A,B,C,D,F,dA,dB,dC,dD,dF] = polydata(sys);
 
-na = [length(A)];
-% nb = [length(B),length(F)];
-nb = [length(B)];
-% nk = [length(C),length(D)];
-nk = [length(C)];
+na = [length (A)];
+nb = [length(B),length(F)];
+nk = [length(C),length(D)];
 
-% Order [outputs, inputs, min input delay]
-order = [na nb nk];
+order = [[na] [nb] [nk]];
 isnlarx (z,order)
 
 

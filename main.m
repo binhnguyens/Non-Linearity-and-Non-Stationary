@@ -16,7 +16,8 @@ switch n
        
         signal = normalization (PPG (1:15000));
         fs = 2000;
-        nltest = 15;
+        
+        nl_test = 15;
         
      case 2
         
@@ -151,14 +152,13 @@ param = sys.Report.Parameters.ParVector;
 % Look at this: https://www.mathworks.com/help/ident/ref/arx.html
 [A,B,C,D,F,dA,dB,dC,dD,dF] = polydata(sys);
 
-na = [length(A)];
-% nb = [length(B),length(F)];
+% na = [length(A)];
+na = [length(A(A>=0))-1];
+% nb = [length(B) length(F)];
 nb = [length(B)];
-% nk = [length(C),length(D)];
+% nk = [length(C) length(D)];
 nk = [length(C)];
 
 % Order [outputs, inputs, min input delay]
-order = [na nb nk];
+order = [[na] [nb] [nk]];
 isnlarx (z,order)
-
-
